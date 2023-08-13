@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizBrain = QuizBrain();
 
@@ -34,20 +35,44 @@ class _QuizPageState extends State<QuizPage> {
   void checkAnswer(bool userPickedAnswer) {
     bool correctAnswers = quizBrain.getCorrectAnswer();
     setState(() {
-      if (correctAnswers == userPickedAnswer) {
-        print('You got it right!');
-        scoreKeeper.add(Icon(
-          Icons.check,
-          color: Colors.green,
-        ));
-      } else {
-        print('You got it wrong!');
-        scoreKeeper.add(Icon(
-          Icons.close,
-          color: Colors.red,
-        ));
+      if (quizBrain.isFinished() == true) {
+        // show an alert using rFlutter_alert,
+
+        //This is the code for the basic alert from the docs for rFlutter Alert:
+        //Alert(context: context, title: "RFLUTTER", desc: "Flutter is awesome.").show();
+
+        //Modified for our purposes:
+        Alert(
+          context: context,
+          title: 'Finished!',
+          desc: 'You\'ve reached the end of the quiz.',
+        ).show();
+
+        // reset the questionNumber,
+        quizBrain.reset();
+
+        // empty out the scoreKeeper.
+        scoreKeeper = [];
       }
-      quizBrain.nextQuestion();
+
+      // If we've not reached the end, ELSE do the answer checking steps below
+
+      else {
+        if (correctAnswers == userPickedAnswer) {
+          print('You got it right!');
+          scoreKeeper.add(Icon(
+            Icons.check,
+            color: Colors.green,
+          ));
+        } else {
+          print('You got it wrong!');
+          scoreKeeper.add(Icon(
+            Icons.close,
+            color: Colors.red,
+          ));
+        }
+        quizBrain.nextQuestion();
+      }
     });
   }
 
